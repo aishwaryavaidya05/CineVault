@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .star-rating {
+      color: #FFD700;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-800">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-10 py-6 text-[#E9CC00] bg-gray-900/90 backdrop-blur-sm">
+     <div class="flex items-center space-x-2">
+  <a href="./index.html" class="text-black font-bold px-2 py-1 rounded">
+    <img src="images/icon.png" alt="Film" class="w-16 h-16">
+  </a>
+  <a href="/" class="text-xl font-semibold tracking-wide text-[#85A8E9]">CineVault</a>
+</div>
+    <nav class="hidden md:flex space-x-8 text-lg font-medium">
+      <a href="./discover.html" class="hover:underline">Watch & Discover</a>
+      <a href="rate-review.html" class="hover:underline">Rate & Review</a>
+      <a href="watchlist.html" class="hover:underline">Watchlist</a>
+      <a href="vaults.html" class="hover:underline">Vaults</a>
+    </nav>
+    <div class="flex items-center space-x-4">
+      <button class="bg-[#E96188] hover:bg-[#4C6AC1] px-4 py-2 rounded-lg text-white font-medium">
+        Sign Up
+      </button>
+      <button class="border border-[#85A8E9] text-[#85A8E9] hover:bg-[#85A8E9] hover:text-white px-4 py-2 rounded-lg font-medium">
+        Log In
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative h-screen flex flex-col justify-center items-start px-10 bg-cover bg-center text-white" 
+           style="background-image: url('./images/herobgimage.jpg');">
+    <div class="absolute inset-0 bg-black/60"></div> <!-- overlay -->
+    
+    <div class="relative z-10 max-w-3xl">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4 leading-tight">
+        Discover the world of cinema<br>with <span class="text-[#85A8E9]">CineVault</span>
+      </h1>
+      <p class="text-lg md:text-xl text-gray-200 mb-6">
+        Explore movies, rate your favorites, and share your thoughts with fellow enthusiasts.
+      </p>
+      <button class="bg-[#E96188] hover:bg-[#4C6AC1] px-6 py-3 rounded-lg text-lg font-semibold shadow-md transition duration-300">
+        Explore Now
+      </button>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="py-16 px-4 bg-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Why Choose CineVault?</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1: Track Films -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#85A8E9] flex items-center justify-center mr-4">
+              <i class="fas fa-film text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Track Your Films</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Keep track of every film you've ever watched (or just start from the day you join)</p>
+          <div class="flex items-center text-sm text-[#85A8E9]">
+            <span>Start tracking today</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+        
+        <!-- Feature 2: Show Love -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#E96188] flex items-center justify-center mr-4">
+              <i class="fas fa-heart text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Show Some Love</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Like your favorite films, lists and reviews to show appreciation</p>
+          <div class="flex items-center text-sm text-[#E96188]">
+            <span>Spread the love</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+        
+        <!-- Feature 3: Write Reviews -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#4C6AC1] flex items-center justify-center mr-4">
+              <i class="fas fa-pen text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Write & Share Reviews</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Write and share reviews, and follow friends and other members to read theirs</p>
+          <div class="flex items-center text-sm text-[#4C6AC1]">
+            <span>Share your thoughts</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+        
+        <!-- Feature 4: Rate Films -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#E9CC00] flex items-center justify-center mr-4">
+              <i class="fas fa-star text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Rate Each Film</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Rate each film on a five-star scale (with halves) to record and share your reaction</p>
+          <div class="flex items-center text-sm text-[#E9CC00]">
+            <span>Start rating</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+        
+        <!-- Feature 5: Film Diary -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#85A8E9] flex items-center justify-center mr-4">
+              <i class="fas fa-book text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Film Diary</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Keep a diary of your film watching with comprehensive stats</p>
+          <div class="flex items-center text-sm text-[#85A8E9]">
+            <span>Start your diary</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+        
+        <!-- Feature 6: Lists & Watchlist -->
+        <div class="bg-gray-700 rounded-xl p-6 feature-card">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#E96188] flex items-center justify-center mr-4">
+              <i class="fas fa-list text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Lists & Watchlist</h3>
+          </div>
+          <p class="text-gray-300 mb-4">Compile and share lists of films on any topic and keep a watchlist of films to see</p>
+          <div class="flex items-center text-sm text-[#E96188]">
+            <span>Create your lists</span>
+            <i class="fas fa-arrow-right ml-2"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH SECTION -->
+  <section class="max-w-4xl mx-auto mt-12 px-4 bg-gray-900 py-8">
+    <div class="relative">
+      <input id="searchInput" type="text" placeholder="Search for movies..."
+        class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-gray-800 text-white border-gray-700">
+      <i class="fas fa-search absolute right-4 top-4 text-gray-400"></i>
+    </div>
+  </section>
+
+  <!-- MOVIES GRID -->
+  <section id="moviesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 max-w-6xl mx-auto px-4 pb-20 bg-gray-900">
+    <!-- Sample Movie Card 1 -->
+    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+      <div class="relative">
+        <img src="https://via.placeholder.com/400x600/1f2937/ffffff?text=Movie+Poster" alt="Movie Poster" class="w-full h-64 object-cover">
+        <div class="absolute top-4 right-4 bg-[#E96188] text-white px-2 py-1 rounded-md font-semibold">
+          4.5 <i class="fas fa-star text-yellow-300"></i>
+        </div>
+      </div>
+      <div class="p-4">
+        <h3 class="text-xl font-bold text-white mb-2">Inception</h3>
+        <p class="text-gray-400 mb-4">A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.</p>
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-2">
+            <button class="text-[#85A8E9] hover:text-[#4C6AC1]">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="text-[#E9CC00] hover:text-yellow-500">
+              <i class="fas fa-star"></i>
+            </button>
+            <button class="text-[#E96188] hover:text-pink-500">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <button class="bg-[#85A8E9] hover:bg-[#4C6AC1] text-white px-3 py-1 rounded-md text-sm">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sample Movie Card 2 -->
+    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+      <div class="relative">
+        <img src="https://via.placeholder.com/400x600/1f2937/ffffff?text=Movie+Poster" alt="Movie Poster" class="w-full h-64 object-cover">
+        <div class="absolute top-4 right-4 bg-[#E96188] text-white px-2 py-1 rounded-md font-semibold">
+          4.2 <i class="fas fa-star text-yellow-300"></i>
+        </div>
+      </div>
+      <div class="p-4">
+        <h3 class="text-xl font-bold text-white mb-2">The Shawshank Redemption</h3>
+        <p class="text-gray-400 mb-4">Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.</p>
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-2">
+            <button class="text-[#85A8E9] hover:text-[#4C6AC1]">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="text-[#E9CC00] hover:text-yellow-500">
+              <i class="fas fa-star"></i>
+            </button>
+            <button class="text-[#E96188] hover:text-pink-500">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <button class="bg-[#85A8E9] hover:bg-[#4C6AC1] text-white px-3 py-1 rounded-md text-sm">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sample Movie Card 3 -->
+    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+      <div class="relative">
+        <img src="https://via.placeholder.com/400x600/1f2937/ffffff?text=Movie+Poster" alt="Movie Poster" class="w-full h-64 object-cover">
+        <div class="absolute top-4 right-4 bg-[#E96188] text-white px-2 py-1 rounded-md font-semibold">
+          4.8 <i class="fas fa-star text-yellow-300"></i>
+        </div>
+      </div>
+      <div class="p-4">
+        <h3 class="text-xl font-bold text-white mb-2">The Dark Knight</h3>
+        <p class="text-gray-400 mb-4">When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.</p>
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-2">
+            <button class="text-[#85A8E9] hover:text-[#4C6AC1]">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="text-[#E9CC00] hover:text-yellow-500">
+              <i class="fas fa-star"></i>
+            </button>
+            <button class="text-[#E96188] hover:text-pink-500">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <button class="bg-[#85A8E9] hover:bg-[#4C6AC1] text-white px-3 py-1 rounded-md text-sm">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 text-white py-8 px-4">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <h3 class="text-xl font-bold mb-4 text-[#85A8E9]">CineVault</h3>
+        <p class="text-gray-400">Your personal film diary and social network for movie enthusiasts.</p>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4">Explore</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#" class="hover:text-white">Movies</a></li>
+          <li><a href="#" class="hover:text-white">TV Shows</a></li>
+          <li><a href="#" class="hover:text-white">People</a></li>
+          <li><a href="#" class="hover:text-white">News</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4">Community</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#" class="hover:text-white">Discussions</a></li>
+          <li><a href="#" class="hover:text-white">Leaderboard</a></li>
+          <li><a href="#" class="hover:text-white">Contributors</a></li>
+          <li><a href="#" class="hover:text-white">API</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4">Account</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#" class="hover:text-white">Sign Up</a></li>
+          <li><a href="#" class="hover:text-white">Log In</a></li>
+          <li><a href="#" class="hover:text-white">Help Center</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto mt-8 pt-8 border-t border-gray-700 text-center text-gray-500">
+      <p>&copy; 2023 CineVault. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/movies.js"></script>
+</body>
+</html>

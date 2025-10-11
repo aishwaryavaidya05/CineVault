@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate & Review - CineVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .star-rating {
+      direction: rtl;
+      display: inline-block;
+    }
+    .star-rating input[type="radio"] {
+      display: none;
+    }
+    .star-rating label {
+      color: #d1d5db;
+      font-size: 2rem;
+      padding: 0 2px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input[type="radio"]:checked ~ label {
+      color: #fbbf24;
+    }
+    .review-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      background-color: rgb(31 41 55); /* Added as requested */
+    }
+    .review-card:hover {
+      transform: translateY(-2px);
+    }
+    .progress-bar {
+      transition: width 0.3s ease-in-out;
+    }
+    
+    /* From Uiverse.io by joe-watson-sbf - Added button styles */
+    .startReviewingBtn{
+      font-size: 17px;
+      background: transparent;
+      border: none;
+      padding: 1em 1.5em;
+      color: #ffedd3;
+      text-transform: uppercase;
+      position: relative;
+      transition: 0.5s ease;
+      cursor: pointer;
+      margin-top: auto; /* This pushes the button to the bottom */
+    }
+    .startReviewingBtn::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 0;
+      background-color: #ffc506;
+      transition: 0.5s ease;
+    }
+    .startReviewingBtn:hover::before {
+      width: 100%;
+    }
+
+    .startReviewingBtn:hover {
+      color: #1e1e2b;
+      transition-delay: 0.5s;
+    }
+    .startReviewingBtn::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 0;
+      width: 100%;
+      background-color: #ffc506;
+      transition: 0.4s ease;
+      z-index: -1;
+    }
+    .startReviewingBtn:hover::after {
+      height: 100%;
+      transition-delay: 0.4s;
+      color: aliceblue;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100"> <!-- Changed from text-gray-800 to text-gray-100 -->
+
+ <!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-10 py-6 text-[#E9CC00] bg-gray-900">
+   <div class="flex items-center space-x-2">
+  <a href="./index.html" class="text-black font-bold px-2 py-1 rounded">
+    <img src="images/icon.png" alt="Film" class="w-16 h-16">
+  </a>
+  <a href="/" class="text-xl font-semibold tracking-wide text-[#85A8E9]">CineVault</a>
+</div>
+  <nav class="hidden md:flex space-x-8 text-lg font-medium">
+    <a href="./discover.html" class="hover:underline">Watch & Discover</a>
+    <a href="rate-review.html" class="hover:underline">Rate & Review</a>
+    <a href="watchlist.html" class="hover:underline">Watchlist</a>
+    <a href="vaults.html" class="hover:underline">Vaults</a>
+  </nav>
+</header>
+
+  <!-- COMPACT HERO SECTION -->
+  <section class="bg-gray-900 text-white py-16 mt-16">
+    <div class="max-w-6xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Rate & Review Movies</h1>
+      <p class="text-lg mb-6 text-blue-100">Movies make us feel. Reviews make us think.</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-3">
+        <button id="findMovieBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold text-base shadow transition duration-200">
+          <i class="fas fa-search mr-2"></i>Find Movie to Review
+        </button>
+        <button id="myReviewsBtn" class="bg-[#E96188] hover:bg-[#593046] text-white px-6 py-2 rounded-lg font-awesome text-base shadow transition duration-200">
+          <i class="fas fa-list mr-2"></i>My Reviews
+        </button>
+      </div>
+    </div>
+  </section>
+<div id="searchModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
+      <div class="p-6 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-bold text-[#4C6AC1]">Find Movie to Review</h3>
+          <button id="closeModal" class="text-gray-400 hover:text-gray-300 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="relative mt-4">
+          <input 
+            id="movieSearchInput" 
+            type="text" 
+            placeholder="Search for a movie..."
+            class="w-full p-4 pl-12 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400"
+          >
+          <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+        </div>
+      </div>
+      <div id="searchResults" class="max-h-96 overflow-y-auto p-4 bg-gray-800">
+        <!-- Search results will appear here -->
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-film text-4xl mb-4"></i>
+          <p>Search for a movie to review</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW FORM MODAL -->
+  <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 id="reviewMovieTitle" class="text-2xl font-bold text-white">Review Movie</h3>
+          <button id="closeReviewModal" class="text-gray-400 hover:text-gray-300 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <form id="reviewForm">
+          <input type="hidden" id="reviewMovieId">
+          
+          <!-- Star Rating -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-300 mb-3">Your Rating</label>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="rating" value="5">
+              <label for="star5"><i class="fas fa-star"></i></label>
+              <input type="radio" id="star4" name="rating" value="4">
+              <label for="star4"><i class="fas fa-star"></i></label>
+              <input type="radio" id="star3" name="rating" value="3">
+              <label for="star3"><i class="fas fa-star"></i></label>
+              <input type="radio" id="star2" name="rating" value="2">
+              <label for="star2"><i class="fas fa-star"></i></label>
+              <input type="radio" id="star1" name="rating" value="1">
+              <label for="star1"><i class="fas fa-star"></i></label>
+            </div>
+            <div id="ratingValue" class="text-sm text-gray-400 mt-2">Select a rating</div>
+          </div>
+
+          <!-- Review Title -->
+          <div class="mb-6">
+            <label for="reviewTitle" class="block text-sm font-medium text-gray-300 mb-2">Review Title</label>
+            <input 
+              type="text" 
+              id="reviewTitle" 
+              placeholder="Give your review a title..."
+              class="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400"
+              maxlength="100"
+            >
+            <div class="text-right text-sm text-gray-400 mt-1">
+              <span id="titleCount">0</span>/100 characters
+            </div>
+          </div>
+
+          <!-- Review Text -->
+          <div class="mb-6">
+            <label for="reviewText" class="block text-sm font-medium text-gray-300 mb-2">Your Review</label>
+            <textarea 
+              id="reviewText" 
+              rows="6" 
+              placeholder="Share your thoughts about the movie... What did you like? What could be better?"
+              class="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-gray-700 text-white placeholder-gray-400"
+              maxlength="1000"
+            ></textarea>
+            <div class="flex justify-between text-sm text-gray-400 mt-1">
+              <span>Be detailed and constructive</span>
+              <span><span id="reviewCount">0</span>/1000 characters</span>
+            </div>
+          </div>
+
+          <!-- Spoiler Warning -->
+          <div class="mb-6">
+            <label class="flex items-center">
+              <input type="checkbox" id="spoilerWarning" class="rounded border-gray-600 text-blue-600 focus:ring-blue-500 bg-gray-700">
+              <span class="ml-2 text-sm text-gray-300">This review contains spoilers</span>
+            </label>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="flex gap-4">
+            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+              <i class="fas fa-paper-plane mr-2"></i>Submit Review
+            </button>
+            <button type="button" id="cancelReview" class="bg-gray-700 hover:bg-gray-600 text-gray-300 py-3 px-6 rounded-lg font-semibold transition duration-200">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- MY REVIEWS SECTION -->
+    <section id="myReviewsSection" class="mb-12">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-100">My Reviews</h2> <!-- Changed from text-gray-800 to text-gray-100 -->
+        <div class="flex gap-2">
+          <button id="sortReviews" class="bg-gray-700 hover:bg-gray-600 text-gray-100 px-4 py-2 rounded-lg font-medium transition duration-200">
+            <i class="fas fa-sort mr-2"></i>Sort by Date
+          </button>
+          <button id="filterReviews" class="bg-gray-700 hover:bg-gray-600 text-gray-100 px-4 py-2 rounded-lg font-medium transition duration-200">
+            <i class="fas fa-filter mr-2"></i>Filter
+          </button>
+        </div>
+      </div>
+
+      <div id="myReviewsList" class="space-y-6">
+        <!-- Reviews will be loaded here -->
+        <div class="text-center py-12 text-gray-400"> <!-- Changed from text-gray-500 to text-gray-400 -->
+          <i class="fas fa-comments text-6xl mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2 text-gray-200">No reviews yet</h3> <!-- Added text-gray-200 -->
+          <p class="mb-4 text-gray-300">Start reviewing movies to see them here!</p> <!-- Added text-gray-300 -->
+          <button id="startReviewingBtn" class="startReviewingBtn">
+            Write Your First Review
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNITY REVIEWS SECTION -->
+    <section id="communityReviewsSection">
+      <h2 class="text-3xl font-bold text-gray-100 mb-6">Recent Community Reviews</h2> <!-- Changed from text-gray-800 to text-gray-100 -->
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column - Featured Reviews -->
+        <div class="space-y-6">
+          <div class="bg-gray-800 rounded-lg shadow-md review-card p-6"> <!-- Changed from bg-white to bg-gray-800 -->
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-lg text-gray-100">Inception</h3> <!-- Changed from text-gray-800 to text-gray-100 -->
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex text-yellow-400">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <span class="text-sm text-gray-300">by MovieLover42</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+              </div>
+              <span class="text-sm text-gray-400">2 hours ago</span> <!-- Changed from text-gray-500 to text-gray-400 -->
+            </div>
+            <h4 class="font-semibold text-gray-200 mb-2">Mind-bending masterpiece!</h4> <!-- Changed from text-gray-700 to text-gray-200 -->
+            <p class="text-gray-300 mb-4">Christopher Nolan delivers yet another cinematic masterpiece. The concept of dream within a dream is executed flawlessly...</p> <!-- Changed from text-gray-600 to text-gray-300 -->
+            <div class="flex justify-between items-center">
+              <div class="flex gap-4 text-sm text-gray-400"> <!-- Changed from text-gray-500 to text-gray-400 -->
+                <button class="flex items-center gap-1 hover:text-blue-400"> <!-- Changed from hover:text-blue-600 to hover:text-blue-400 -->
+                  <i class="far fa-thumbs-up"></i> 24
+                </button>
+                <button class="flex items-center gap-1 hover:text-blue-400"> <!-- Changed from hover:text-blue-600 to hover:text-blue-400 -->
+                  <i class="far fa-comment"></i> 8
+                </button>
+              </div>
+              <span class="bg-green-800 text-green-100 text-xs px-2 py-1 rounded">Featured</span> <!-- Changed colors for better contrast -->
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-lg shadow-md review-card p-6"> <!-- Changed from bg-white to bg-gray-800 -->
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-lg text-gray-100">The Shawshank Redemption</h3> <!-- Changed from text-gray-800 to text-gray-100 -->
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex text-yellow-400">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <span class="text-sm text-gray-300">by CinemaFanatic</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+              </div>
+              <span class="text-sm text-gray-400">1 day ago</span> <!-- Changed from text-gray-500 to text-gray-400 -->
+            </div>
+            <h4 class="font-semibold text-gray-200 mb-2">A story of hope and friendship</h4> <!-- Changed from text-gray-700 to text-gray-200 -->
+            <p class="text-gray-300 mb-4">Tim Robbins and Morgan Freeman deliver career-defining performances. This film reminds us of the power of hope...</p> <!-- Changed from text-gray-600 to text-gray-300 -->
+            <div class="flex justify-between items-center">
+              <div class="flex gap-4 text-sm text-gray-400"> <!-- Changed from text-gray-500 to text-gray-400 -->
+                <button class="flex items-center gap-1 hover:text-blue-400"> <!-- Changed from hover:text-blue-600 to hover:text-blue-400 -->
+                  <i class="far fa-thumbs-up"></i> 18
+                </button>
+                <button class="flex items-center gap-1 hover:text-blue-400"> <!-- Changed from hover:text-blue-600 to hover:text-blue-400 -->
+                  <i class="far fa-comment"></i> 5
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Review Statistics -->
+        <div class="bg-gray-800 rounded-lg shadow-md p-6"> <!-- Changed from bg-white to bg-gray-800 -->
+          <h3 class="font-bold text-xl text-gray-100 mb-6">Review Statistics</h3> <!-- Changed from text-gray-800 to text-gray-100 -->
+          
+          <div class="space-y-6">
+            <!-- Rating Distribution -->
+            <div>
+              <h4 class="font-semibold text-gray-200 mb-3">Your Rating Distribution</h4> <!-- Changed from text-gray-700 to text-gray-200 -->
+              <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-300 w-16">5 Stars</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                  <div class="flex-1 bg-gray-700 rounded-full h-2"> <!-- Changed from bg-gray-200 to bg-gray-700 -->
+                    <div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width: 40%"></div>
+                  </div>
+                  <span class="text-sm text-gray-300 w-8">8</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-300 w-16">4 Stars</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                  <div class="flex-1 bg-gray-700 rounded-full h-2"> <!-- Changed from bg-gray-200 to bg-gray-700 -->
+                    <div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width: 30%"></div>
+                  </div>
+                  <span class="text-sm text-gray-300 w-8">6</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-300 w-16">3 Stars</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                  <div class="flex-1 bg-gray-700 rounded-full h-2"> <!-- Changed from bg-gray-200 to bg-gray-700 -->
+                    <div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width: 20%"></div>
+                  </div>
+                  <span class="text-sm text-gray-300 w-8">4</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-300 w-16">2 Stars</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                  <div class="flex-1 bg-gray-700 rounded-full h-2"> <!-- Changed from bg-gray-200 to bg-gray-700 -->
+                    <div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width: 5%"></div>
+                  </div>
+                  <span class="text-sm text-gray-300 w-8">1</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-300 w-16">1 Star</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                  <div class="flex-1 bg-gray-700 rounded-full h-2"> <!-- Changed from bg-gray-200 to bg-gray-700 -->
+                    <div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width: 5%"></div>
+                  </div>
+                  <span class="text-sm text-gray-300 w-8">1</span> <!-- Changed from text-gray-600 to text-gray-300 -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Review Stats -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center p-4 bg-blue-900 rounded-lg"> <!-- Changed from bg-blue-50 to bg-blue-900 -->
+                <div class="text-2xl font-bold text-blue-200">20</div> <!-- Changed from text-blue-600 to text-blue-200 -->
+                <div class="text-sm text-gray-300">Reviews Written</div> <!-- Changed from text-gray-600 to text-gray-300 -->
+              </div>
+              <div class="text-center p-4 bg-green-900 rounded-lg"> <!-- Changed from bg-green-50 to bg-green-900 -->
+                <div class="text-2xl font-bold text-green-200">4.2</div> <!-- Changed from text-green-600 to text-green-200 -->
+                <div class="text-sm text-gray-300">Average Rating</div> <!-- Changed from text-gray-600 to text-gray-300 -->
+              </div>
+              <div class="text-center p-4 bg-purple-900 rounded-lg"> <!-- Changed from bg-purple-50 to bg-purple-900 -->
+                <div class="text-2xl font-bold text-purple-200">156</div> <!-- Changed from text-purple-600 to text-purple-200 -->
+                <div class="text-sm text-gray-300">Likes Received</div> <!-- Changed from text-gray-600 to text-gray-300 -->
+              </div>
+              <div class="text-center p-4 bg-orange-900 rounded-lg"> <!-- Changed from bg-orange-50 to bg-orange-900 -->
+                <div class="text-2xl font-bold text-orange-200">12</div> <!-- Changed from text-orange-600 to text-orange-200 -->
+                <div class="text-sm text-gray-300">Featured Reviews</div> <!-- Changed from text-gray-600 to text-gray-300 -->
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div>
+              <h4 class="font-semibold text-gray-200 mb-3">Recent Activity</h4> <!-- Changed from text-gray-700 to text-gray-200 -->
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 text-sm text-gray-300"> <!-- Added text-gray-300 -->
+                  <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Reviewed <strong class="text-gray-100">Interstellar</strong></span> <!-- Added text-gray-100 -->
+                  <span class="text-gray-400 ml-auto">Today</span> <!-- Changed from text-gray-500 to text-gray-400 -->
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-300"> <!-- Added text-gray-300 -->
+                  <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>Liked a review of <strong class="text-gray-100">The Dark Knight</strong></span> <!-- Added text-gray-100 -->
+                  <span class="text-gray-400 ml-auto">Yesterday</span> <!-- Changed from text-gray-500 to text-gray-400 -->
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-300"> <!-- Added text-gray-300 -->
+                  <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span>Featured review for <strong class="text-gray-100">Pulp Fiction</strong></span> <!-- Added text-gray-100 -->
+                  <span class="text-gray-400 ml-auto">3 days ago</span> <!-- Changed from text-gray-500 to text-gray-400 -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JavaScript Files -->
+  <script src="js/rate-review.js"></script>
+
+</body>
+</html>

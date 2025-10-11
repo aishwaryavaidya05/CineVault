@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Vaults - CineVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .vault-card img {
+  transition: transform 0.3s ease;
+}
+
+.vault-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Ensure images don't overflow their containers */
+.vault-card .grid img,
+#movieSearchResults img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+    .vault-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .vault-card:hover {
+      transform: translateY(-4px);
+    }
+    .movie-note {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .share-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1f2937;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .share-dropdown.show {
+      display: block;
+    }
+    .note-editor {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .collaborator-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -8px;
+    }
+    .collaborator-avatar:first-child {
+      margin-left: 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+  <!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-10 py-6 text-[#E9CC00] bg-gray-900">
+   <div class="flex items-center space-x-2">
+  <a href="./index.html" class="text-black font-bold px-2 py-1 rounded">
+    <img src="images/icon.png" alt="Film" class="w-16 h-16">
+  </a>
+  <a href="/" class="text-xl font-semibold tracking-wide text-[#85A8E9]">CineVault</a>
+</div>
+  <nav class="hidden md:flex space-x-8 text-lg font-medium">
+    <a href="./discover.html" class="hover:underline">Watch & Discover</a>
+    <a href="rate-review.html" class="hover:underline">Rate & Review</a>
+    <a href="watchlist.html" class="hover:underline">Watchlist</a>
+    <a href="vaults.html" class="hover:underline">Vaults</a>
+  </nav>
+</header>
+
+  <!-- HERO SECTION -->
+  <section class="bg-gray-900 text-white py-16 mt-16">
+    <div class="max-w-6xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">My Vaults</h1>
+      <p class="text-xl mb-8 text-emerald-100">Create custom movie collections with personal notes and insights</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <button id="createVaultBtn" class="bg-gray-700 hover:bg-gray-600 text-white focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-lg px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-plus mr-2"></i>Create New Vault
+        </button>
+        <button id="discoverMoviesBtn" class="bg-[#E96188] hover:bg-[#593046] text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-compass mr-2"></i>Discover Movies
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE VAULT MODAL -->
+  <div id="createVaultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+      <div class="p-6 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-bold text-white">Create New Vault</h3>
+          <button id="closeCreateModal" class="text-gray-400 hover:text-gray-200 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <form id="createVaultForm" class="p-6">
+        <div class="mb-6">
+          <label for="vaultName" class="block text-sm font-medium text-gray-300 mb-2">Vault Name</label>
+          <input 
+            type="text" 
+            id="vaultName" 
+            placeholder="e.g., Sci-Fi Classics, Romantic Evenings, Mind-Bending Thrillers"
+            class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            maxlength="50"
+            required
+          >
+          <div class="text-right text-sm text-gray-400 mt-1">
+            <span id="vaultNameCount">0</span>/50 characters
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label for="vaultDescription" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <textarea 
+            id="vaultDescription" 
+            rows="3" 
+            placeholder="Describe what this vault is about..."
+            class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+            maxlength="200"
+          ></textarea>
+          <div class="text-right text-sm text-gray-400 mt-1">
+            <span id="vaultDescCount">0</span>/200 characters
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-300 mb-2">Privacy Settings</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input type="radio" name="privacy" value="private" class="mr-3 text-emerald-600 focus:ring-emerald-500" checked>
+              <span class="flex items-center text-gray-300">
+                <i class="fas fa-lock mr-2 text-gray-400"></i>
+                Private - Only you can see this vault
+              </span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="privacy" value="public" class="mr-3 text-emerald-600 focus:ring-emerald-500">
+              <span class="flex items-center text-gray-300">
+                <i class="fas fa-globe mr-2 text-gray-400"></i>
+                Public - Anyone can view this vault
+              </span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="privacy" value="shared" class="mr-3 text-emerald-600 focus:ring-emerald-500">
+              <span class="flex items-center text-gray-300">
+                <i class="fas fa-users mr-2 text-gray-400"></i>
+                Shared - Only people with link can view
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+            <i class="fas fa-vault mr-2"></i>Create Vault
+          </button>
+          <button type="button" id="cancelCreateVault" class="bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD MOVIE MODAL -->
+  <div id="addMovieModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+      <div class="p-6 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-bold text-white">Add Movies to <span id="currentVaultName"></span></h3>
+          <button id="closeAddMovieModal" class="text-gray-400 hover:text-gray-200 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="mt-4">
+          <div class="relative">
+            <input 
+              id="movieSearchInput" 
+              type="text" 
+              placeholder="Search for movies to add..."
+              class="w-full p-4 pl-12 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+          </div>
+        </div>
+      </div>
+      <div id="movieSearchResults" class="max-h-96 overflow-y-auto p-4 bg-gray-800">
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-film text-4xl mb-4"></i>
+          <p>Search for movies to add to your vault</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTE EDITOR MODAL -->
+  <div id="noteEditorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4">
+      <div class="p-6 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-bold text-white">Add Note for <span id="noteMovieTitle"></span></h3>
+          <button id="closeNoteModal" class="text-gray-400 hover:text-gray-200 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <form id="noteEditorForm" class="p-6">
+        <input type="hidden" id="noteMovieId">
+        <input type="hidden" id="noteVaultId">
+        
+        <div class="mb-6">
+          <label for="movieNote" class="block text-sm font-medium text-gray-300 mb-2">Your Personal Note</label>
+          <textarea 
+            id="movieNote" 
+            rows="6" 
+            placeholder="Share your thoughts, insights, or why this movie belongs in this vault..."
+            class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none note-editor"
+            maxlength="1000"
+          ></textarea>
+          <div class="flex justify-between text-sm text-gray-400 mt-1">
+            <span>This note is only visible in this vault</span>
+            <span><span id="noteCount">0</span>/1000 characters</span>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+            <i class="fas fa-save mr-2"></i>Save Note
+          </button>
+          <button type="button" id="cancelNote" class="bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="text-center py-16">
+      <div class="max-w-md mx-auto">
+        <i class="fas fa-box-open text-6xl text-gray-500 mb-6"></i>
+        <h2 class="text-3xl font-bold text-gray-400 mb-4">No Vaults Yet</h2>
+        <p class="text-xl text-gray-500 mb-6">Create your first vault to start organizing your favorite movies with personal notes and insights.</p>
+        <button id="createFirstVaultBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-plus mr-2"></i>Create Your First Vault
+        </button>
+      </div>
+    </div>
+
+    <!-- VAULTS GRID -->
+    <div id="vaultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+      <!-- Vault cards will be loaded here -->
+      <!-- Example vault cards -->
+      <div class="vault-card bg-gray-800 hover:transform hover:scale-105 transition duration-300 text-white ease-in-out rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold text-white">Processor</h3>
+            <span class="bg-gray-700 text-white text-xs font-semibold px-2 py-1 rounded">Sad</span>
+          </div>
+          <p class="text-gray-300 mb-4">No description</p>
+          <div class="flex justify-between text-sm text-gray-400">
+            <span>2 movies</span>
+            <span>Oct 5, 2025</span>
+          </div>
+          <div class="mt-4 flex justify-between">
+            <span class="text-gray-400">? 0</span>
+            <div class="flex space-x-2">
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="vault-card bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold text-white">Dream Girl</h3>
+            <span class="bg-gray-700 text-white text-xs font-semibold px-2 py-1 rounded">Funny</span>
+          </div>
+          <p class="text-gray-300 mb-4">No description</p>
+          <div class="flex justify-between text-sm text-gray-400">
+            <span>2 movies</span>
+            <span>Oct 5, 2025</span>
+          </div>
+          <div class="mt-4 flex justify-between">
+            <span class="text-gray-400">? 2</span>
+            <div class="flex space-x-2">
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="vault-card bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold text-white">Profile</h3>
+            <span class="bg-gray-700 text-white text-xs font-semibold px-2 py-1 rounded">Powles</span>
+          </div>
+          <p class="text-gray-300 mb-4">No description</p>
+          <div class="flex justify-between text-sm text-gray-400">
+            <span>0 movies</span>
+            <span>Oct 5, 2025</span>
+          </div>
+          <div class="mt-4 flex justify-between">
+            <span class="text-gray-400">? 0</span>
+            <div class="flex space-x-2">
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-gray-400 hover:text-gray-200">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VAULT DETAIL VIEW -->
+    <div id="vaultDetailView" class="hidden">
+      <!-- Back Button and Header -->
+      <div class="flex items-center gap-4 mb-6">
+        <button id="backToVaults" class="bg-gray-700 hover:bg-gray-600 text-gray-200 w-10 h-10 rounded-full flex items-center justify-center transition duration-200">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 id="detailVaultName" class="text-3xl font-bold text-white"></h2>
+          <p id="detailVaultDescription" class="text-gray-300"></p>
+        </div>
+      </div>
+
+      <!-- Vault Actions -->
+      <div class="flex flex-wrap gap-4 mb-6">
+        <button id="addMoviesToVault" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">
+          <i class="fas fa-plus mr-2"></i>Add Movies
+        </button>
+        <div class="relative">
+          <button id="shareVaultBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">
+            <i class="fas fa-share mr-2"></i>Share Vault
+          </button>
+          <div id="shareDropdown" class="share-dropdown mt-1 w-48">
+            <button class="share-option w-full text-left px-4 py-3 hover:bg-gray-700 border-b border-gray-600 text-white" data-action="copy-link">
+              <i class="fas fa-link mr-2 text-gray-400"></i>Copy Link
+            </button>
+            <button class="share-option w-full text-left px-4 py-3 hover:bg-gray-700 border-b border-gray-600 text-white" data-action="social">
+              <i class="fas fa-share-alt mr-2 text-gray-400"></i>Share on Social
+            </button>
+            <button class="share-option w-full text-left px-4 py-3 hover:bg-gray-700 text-white" data-action="collaborate">
+              <i class="fas fa-user-plus mr-2 text-gray-400"></i>Add Collaborators
+            </button>
+          </div>
+        </div>
+        <button id="editVaultBtn" class="bg-gray-600 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">
+          <i class="fas fa-edit mr-2"></i>Edit Vault
+        </button>
+        <button id="deleteVaultBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">
+          <i class="fas fa-trash mr-2"></i>Delete Vault
+        </button>
+      </div>
+
+      <!-- Vault Stats -->
+      <div class="bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-emerald-400" id="vaultMovieCount">0</div>
+            <div class="text-sm text-gray-400">Movies</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-400" id="vaultNoteCount">0</div>
+            <div class="text-sm text-gray-400">Notes</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-purple-400" id="vaultViewCount">0</div>
+            <div class="text-sm text-gray-400">Views</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-orange-400" id="vaultCollaborators">0</div>
+            <div class="text-sm text-gray-400">Collaborators</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Movies Grid -->
+      <div id="vaultMoviesGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Movies in vault will be loaded here -->
+      </div>
+
+      <!-- Empty Vault State -->
+      <div id="emptyVaultState" class="text-center py-12 bg-gray-800 rounded-lg hidden">
+        <i class="fas fa-film text-6xl text-gray-500 mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-400 mb-2">No Movies Yet</h3>
+        <p class="text-gray-500 mb-6">Start adding movies to your vault to see them here.</p>
+        <button id="addFirstMovieBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold">
+          <i class="fas fa-plus mr-2"></i>Add Your First Movie
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript Files -->
+  <script src="js/vaults.js"></script>
+
+  <script>
+    // Simple script to show the vaults grid and hide empty state
+    document.addEventListener('DOMContentLoaded', function() {
+      const emptyState = document.getElementById('emptyState');
+      const vaultsGrid = document.getElementById('vaultsGrid');
+      
+      // Show vaults grid and hide empty state (for demo purposes)
+      emptyState.classList.add('hidden');
+      vaultsGrid.classList.remove('hidden');
+    });
+  </script>
+
+</body>
+</html>

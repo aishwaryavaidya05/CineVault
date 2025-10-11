@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Watchlist - CineVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .watchlist-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      background-color: #1f2937; /* gray-800 */
+    }
+    .watchlist-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .empty-state {
+      background: #1f2937; /* gray-800 */
+    }
+    .filter-btn.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .sort-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .sort-dropdown.show {
+      display: block;
+    }
+    .controls-bar {
+      background-color: #1f2937; /* gray-800 */
+    }
+    .stats-card {
+      background-color: #1f2937; /* gray-800 */
+    }
+    .sort-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 10;
+    min-width: 200px;
+}
+.sort-dropdown.show {
+    display: block;
+}
+.sort-option {
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.sort-option:hover {
+    background-color: #f3f4f6;
+}
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+  <!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-10 py-6 text-[#E9CC00] bg-gray-900">
+   <div class="flex items-center space-x-2">
+  <a href="./index.html" class="text-black font-bold px-2 py-1 rounded">
+    <img src="images/icon.png" alt="Film" class="w-16 h-16">
+  </a>
+  <a href="/" class="text-xl font-semibold tracking-wide text-[#85A8E9]">CineVault</a>
+</div>
+  <nav class="hidden md:flex space-x-8 text-lg font-medium">
+    <a href="./discover.html" class="hover:underline">Watch & Discover</a>
+    <a href="rate-review.html" class="hover:underline">Rate & Review</a>
+    <a href="watchlist.html" class="hover:underline">Watchlist</a>
+    <a href="vaults.html" class="hover:underline">Vaults</a>
+  </nav>
+</header>
+
+  <!-- HERO SECTION -->
+  <section class="bg-gray-900 text-white py-16">
+    <div class="max-w-6xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">My Watchlist</h1>
+      <p class="text-xl mb-8 text-indigo-100">Keep track of movies and shows you want to watch</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <button id="addToWatchlistBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-plus mr-2"></i>Add Movies/Shows
+        </button>
+        <button id="discoverBtn" class="bg-[#E96188] hover:bg-[#593046] text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-compass mr-2"></i>Discover More
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WATCHLIST STATS -->
+  <div id="watchlistStats" class="max-w-7xl mx-auto px-4 py-6 hidden">
+    <div class="stats-card rounded-lg shadow-sm p-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-indigo-400" id="totalCount">0</div>
+          <div class="text-sm text-gray-300">Total Items</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-green-400" id="moviesCount">0</div>
+          <div class="text-sm text-gray-300">Movies</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-blue-400" id="showsCount">0</div>
+          <div class="text-sm text-gray-300">TV Shows</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-purple-400" id="watchedCount">0</div>
+          <div class="text-sm text-gray-300">Watched</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS BAR -->
+  <section class="max-w-7xl mx-auto px-4 py-6">
+    <div class="controls-bar rounded-lg p-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="all">
+            All Items
+          </button>
+          <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="movie">
+            Movies
+          </button>
+          <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="tv">
+            TV Shows
+          </button>
+          <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="unwatched">
+            Unwatched
+          </button>
+          <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="watched">
+            Watched
+          </button>
+        </div>
+
+        <!-- Sort Dropdown -->
+        <div class="relative">
+          <button id="sortButton" class="bg-gray-700 text-white border border-gray-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-600 flex items-center gap-2">
+            <i class="fas fa-sort"></i>
+            Sort by: <span id="currentSort">Recently Added</span>
+            <i class="fas fa-chevron-down text-sm"></i>
+          </button>
+          <div id="sortDropdown" class="sort-dropdown mt-1 w-48">
+            <button class="sort-option w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-100" data-sort="recent">
+              <i class="fas fa-clock mr-2 text-gray-400"></i>Recently Added
+            </button>
+            <button class="sort-option w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-100" data-sort="title">
+              <i class="fas fa-font mr-2 text-gray-400"></i>Title (A-Z)
+            </button>
+            <button class="sort-option w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-100" data-sort="rating">
+              <i class="fas fa-star mr-2 text-gray-400"></i>Rating (High to Low)
+            </button>
+            <button class="sort-option w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-100" data-sort="release">
+              <i class="fas fa-calendar mr-2 text-gray-400"></i>Release Date (Newest)
+            </button>
+            <button class="sort-option w-full text-left px-4 py-3 hover:bg-gray-100" data-sort="runtime">
+              <i class="fas fa-hourglass-half mr-2 text-gray-400"></i>Runtime (Shortest)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH MODAL -->
+  <div id="searchModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+      <div class="p-6 border-b">
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-bold text-gray-800">Add to Watchlist</h3>
+          <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="flex gap-4 mt-4">
+          <div class="flex-1">
+            <div class="relative">
+              <input 
+                id="contentSearchInput" 
+                type="text" 
+                placeholder="Search for movies or TV shows..."
+                class="w-full p-4 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+              <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+            </div>
+          </div>
+          <select id="contentType" class="bg-white border rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="multi">Movies & TV</option>
+            <option value="movie">Movies Only</option>
+            <option value="tv">TV Shows Only</option>
+          </select>
+        </div>
+      </div>
+      <div id="searchResults" class="max-h-96 overflow-y-auto p-4">
+        <div class="text-center py-8 text-gray-500">
+          <i class="fas fa-search text-4xl mb-4"></i>
+          <p>Search for movies or TV shows to add to your watchlist</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATCHLIST CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="empty-state text-white rounded-2xl p-12 text-center mb-8">
+      <div class="max-w-md mx-auto">
+        <i class="fas fa-bookmark text-6xl mb-6 text-indigo-400"></i>
+        <h2 class="text-3xl font-bold mb-4">Your Watchlist is Empty</h2>
+        <p class="text-xl mb-6 opacity-90">Start building your personalized watchlist by adding movies and TV shows you want to watch.</p>
+        <button id="getStartedBtn" class="bg-indigo-600 text-white hover:bg-indigo-700 px-8 py-3 rounded-lg font-semibold text-lg shadow-lg transition duration-200">
+          <i class="fas fa-plus mr-2"></i>Add Your First Item
+        </button>
+      </div>
+    </div>
+
+    <!-- WATCHLIST GRID -->
+    <div id="watchlistGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+      <!-- Sample watchlist items with gray-800 background -->
+      <div class="watchlist-card rounded-xl overflow-hidden shadow-lg">
+        <div class="relative">
+          <img src="https://via.placeholder.com/300x450/1f2937/ffffff?text=Movie+Poster" alt="Movie Poster" class="w-full h-64 object-cover">
+          <div class="absolute top-3 right-3 bg-gray-800 bg-opacity-80 text-white px-2 py-1 rounded-md">
+            <i class="fas fa-star text-yellow-400 mr-1"></i>8.5
+          </div>
+          <div class="absolute bottom-3 left-3">
+            <span class="bg-indigo-600 text-white text-xs font-semibold px-2 py-1 rounded">Movie</span>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2 text-white">Inception</h3>
+          <div class="flex justify-between text-sm text-gray-300 mb-3">
+            <span>2010</span>
+            <span><i class="far fa-clock mr-1"></i>148 min</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <button class="text-indigo-400 hover:text-indigo-300">
+              <i class="far fa-eye-slash"></i>
+            </button>
+            <button class="text-red-400 hover:text-red-300">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="watchlist-card rounded-xl overflow-hidden shadow-lg bg-gray-800">
+        <div class="relative">
+          <img src="https://via.placeholder.com/300x450/1f2937/ffffff?text=TV+Show+Poster" alt="TV Show Poster" class="w-full h-64 object-cover">
+          <div class="absolute top-3 right-3 bg-gray-900 bg-opacity-90 text-white px-2 py-1 rounded-md">
+            <i class="fas fa-star text-yellow-400 mr-1"></i>9.2
+          </div>
+          <div class="absolute bottom-3 left-3">
+            <span class="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded">TV Show</span>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2 text-white">Stranger Things</h3>
+          <div class="flex justify-between text-sm text-gray-300 mb-3">
+            <span>2016</span>
+            <span><i class="fas fa-tv mr-1"></i>4 Seasons</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <button class="text-indigo-400 hover:text-indigo-300">
+              <i class="far fa-eye-slash"></i>
+            </button>
+            <button class="text-red-400 hover:text-red-300">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BULK ACTIONS -->
+    <div id="bulkActions" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 shadow-lg rounded-full px-6 py-3 hidden z-30">
+      <div class="flex items-center gap-4">
+        <span id="selectedCount" class="font-semibold text-white">0 items selected</span>
+        <button id="markWatchedBulk" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition duration-200">
+          <i class="fas fa-check mr-1"></i>Mark Watched
+        </button>
+        <button id="removeBulk" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition duration-200">
+          <i class="fas fa-trash mr-1"></i>Remove
+        </button>
+        <button id="clearSelection" class="text-gray-300 hover:text-white">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+    <!-- JavaScript Files -->
+  <script src="js/watchlist.js"></script>
+</body>
+</html>
+
+</body>
+</html>

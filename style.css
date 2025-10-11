@@ -1,0 +1,9 @@
+body.dark-mode {
+  background-color: #1a202c;
+  color: #f7fafc;
+}
+body.dark-mode input,
+body.dark-mode textarea {
+  background-color: #2d3748;
+  color: #f7fafc;
+}

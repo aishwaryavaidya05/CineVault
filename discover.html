@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Movies - CineVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom styles to ensure proper spacing */
+    body {
+      padding-top: 80px; /* Creates space for the fixed navbar */
+    }
+    
+    /* Custom card styling for consistent height */
+    .movie-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: rgb(31 41 55); /* Updated to gray-800 */
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .movie-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .movie-poster {
+      height: 300px;
+      background-color: #4b5563; /* Darker background for poster area */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+    
+    .movie-content {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 220px; /* Fixed height for content area */
+    }
+    
+    .movie-title {
+      font-weight: 700;
+      font-size: 1.125rem;
+      line-height: 1.3;
+      min-height: 2.6em; /* Exactly two lines of text */
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: white; /* Updated for better contrast */
+    }
+    
+    .movie-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.875rem;
+      color: #d1d5db; /* Updated for better contrast */
+    }
+    
+    .movie-description {
+      flex: 1;
+      color: #e5e7eb; /* Updated for better contrast */
+      line-height: 1.5;
+      margin-bottom: 16px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      min-height: 4.5em; /* Exactly three lines of text */
+    }
+    
+    .view-details-btn {
+  /* From Uiverse.io by joe-watson-sbf */ 
+
+  font-size: 17px;
+  background: transparent;
+  border: none;
+  padding: 1em 1.5em;
+  color: #ffedd3;
+  text-transform: uppercase;
+  position: relative;
+  transition: 0.5s ease;
+  cursor: pointer;
+  margin-top: auto; /* This pushes the button to the bottom */
+    }
+    .view-details-btn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background-color: #ffc506;
+  transition: 0.5s ease;
+}
+.view-details-btn:hover::before {
+  width: 100%;
+}
+
+    .view-details-btn:hover {
+       color: #1e1e2b;
+  transition-delay: 0.5s;
+}
+.view-details-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0;
+  width: 100%;
+  background-color: #ffc506;
+  transition: 0.4s ease;
+  z-index: -1;
+}
+.view-details-btn:hover::after {
+  height: 100%;
+  transition-delay: 0.4s;
+  color: aliceblue;
+}
+
+
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background-color: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    
+    .modal-close:hover {
+      color: #374151;
+    }
+    
+    .movie-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .movie-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .movie-details-poster {
+      width: 100%;
+      height: 400px;
+      background-color: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: #9ca3af;
+      overflow: hidden;
+    }
+    
+    .movie-details-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      position: relative;
+    }
+    
+    .action-btn.active {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+    
+    .action-btn:hover {
+      border-color: #3b82f6;
+      background-color: #f8fafc;
+    }
+    
+    .action-btn i {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: #3b82f6;
+    }
+    
+    .action-btn span {
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .rating-stars {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .star {
+      color: #d1d5db;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: color 0.2s;
+    }
+    
+    .star.active {
+      color: #fbbf24;
+    }
+    
+    .star:hover {
+      color: #fbbf24;
+    }
+    
+    .review-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      margin-top: 10px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    .vault-select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-family: inherit;
+    }
+    
+    /* Line clamp utilities */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .genre-tag {
+      display: inline-block;
+      background-color: #e5e7eb;
+      color: #374151;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    
+    .user-rating {
+      background-color: #3b82f6;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-800">
+
+  <!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-10 py-6 text-[#E9CC00] bg-gray-900">
+  <div class="flex items-center space-x-2">
+  <a href="./index.html" class="text-black font-bold px-2 py-1 rounded">
+    <img src="images/icon.png" alt="Film" class="w-16 h-16">
+  </a>
+  <a href="/" class="text-xl font-semibold tracking-wide text-[#85A8E9]">CineVault</a>
+</div>
+  <nav class="hidden md:flex space-x-8 text-lg font-medium">
+    <a href="./discover.html" class="hover:underline">Watch & Discover</a>
+    <a href="rate-review.html" class="hover:underline">Rate & Review</a>
+    <a href="watchlist.html" class="hover:underline">Watchlist</a>
+    <a href="vaults.html" class="hover:underline">Vaults</a>
+  </nav>
+</header>
+
+  <!-- HERO SEARCH SECTION -->
+  <section class="bg-[#0f172a] text-white py-16 mt-16">   
+    <div class="max-w-4xl mx-auto text-center px-4">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Discover Amazing Movies</h1>
+      <p class="text-xl mb-8 text-gray-300">Search through thousands of movies and find your next favorite</p>
+      
+      <div class="relative max-w-2xl mx-auto">
+        <input 
+          id="searchInput" 
+          type="text" 
+          placeholder="Search for movies, actors, or genres..."
+          class="w-full p-4 pl-12 rounded-xl bg-gray-700 hover:bg-gray-600 text-white focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-lg"
+        >
+        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-lg"></i>
+        <button 
+          id="searchButton"
+          class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#E96188] hover:bg-[#4C6AC1] text-white px-6 py-2 rounded-lg font-semibold transition duration-200"
+        >
+          Search
+        </button>
+      </div>
+
+      <!-- Quick Filter Buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mt-6">
+        <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="popular">
+          Popular
+        </button>
+        <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="top_rated">
+          Top Rated
+        </button>
+        <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="upcoming">
+          Upcoming
+        </button>
+        <button class="filter-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full transition duration-200" data-filter="now_playing">
+          Now Playing
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOADING SPINNER -->
+  <div id="loadingSpinner" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl flex items-center space-x-4">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <p class="text-lg font-semibold">Loading movies...</p>
+    </div>
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  <section class="max-w-7xl mx-auto px-4 py-8">
+    <div id="resultsHeader" class="mb-6">
+      <h2 id="resultsTitle" class="text-2xl font-bold text-white">Popular Movies</h2> <!-- Updated text color -->
+      <p id="resultsCount" class="text-gray-300 mt-2">Page 1 of 52837</p> <!-- Updated text color -->
+    </div>
+
+    <!-- MOVIES GRID -->
+    <div id="moviesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <!-- Movie cards will be loaded here by JavaScript -->
+    </div>
+
+    <!-- NO RESULTS MESSAGE -->
+    <div id="noResults" class="hidden text-center py-12">
+      <i class="fas fa-film text-6xl text-gray-300 mb-4"></i>
+      <h3 class="text-2xl font-bold text-gray-600 mb-2">No movies found</h3>
+      <p class="text-gray-500">Try adjusting your search terms or filters</p>
+    </div>
+
+    <!-- LOAD MORE BUTTON -->
+    <div id="loadMoreContainer" class="hidden text-center mt-12">
+      <button id="loadMoreBtn" class="bg-transparent hover:bg-gray-800 text-[#E9CC00] px-8 py-3 rounded-lg font-semibold shadow-md transition duration-200 text-2xl">
+        Load More Movies
+      </button>
+    </div>
+  </section>
+
+  <!-- MOVIE DETAILS MODAL -->
+  <div id="movieDetailsModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalMovieTitle" class="text-2xl font-bold">Movie Title</h2>
+        <button id="modalCloseBtn" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="movie-details-grid">
+          <div>
+            <div class="movie-details-poster" id="modalMoviePoster">
+              <i class="fas fa-film text-6xl"></i>
+            </div>
+            <div class="mt-4 text-center">
+              <div class="user-rating inline-block" id="modalUserRating"></div>
+            </div>
+          </div>
+          <div>
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">Overview</h3>
+              <p id="modalMovieOverview" class="text-gray-700">Movie description will appear here.</p>
+            </div>
+            
+            <div class="mb-4">
+              <h4 class="font-semibold mb-2">Genres</h4>
+              <div id="modalMovieGenres" class="flex flex-wrap">
+                <!-- Genres will be added here -->
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <h4 class="font-semibold">Release Date</h4>
+                <p id="modalMovieReleaseDate" class="text-gray-700">2025</p>
+              </div>
+              <div>
+                <h4 class="font-semibold">Language</h4>
+                <p id="modalMovieLanguage" class="text-gray-700">EN</p>
+              </div>
+              <div>
+                <h4 class="font-semibold">Rating</h4>
+                <p id="modalMovieRating" class="text-gray-700">Not rated yet</p>
+              </div>
+              <div>
+                <h4 class="font-semibold">Runtime</h4>
+                <p id="modalMovieRuntime" class="text-gray-700">120 min</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <!-- Add to Watchlist -->
+          <div class="action-btn" id="addToWatchlistBtn">
+            <i class="fas fa-bookmark"></i>
+            <span>Add to Watchlist</span>
+          </div>
+          
+          <!-- Add to Vault -->
+          <div class="action-btn" id="addToVaultBtn">
+            <i class="fas fa-folder-plus"></i>
+            <span>Add to Vault</span>
+            <select class="vault-select hidden" id="vaultSelect">
+              <option value="">Select a vault</option>
+              <!-- Vaults will be populated dynamically -->
+              <option value="new-vault">Create New Vault</option>
+            </select>
+          </div>
+          
+          <!-- Rate and Review -->
+          <div class="action-btn" id="rateReviewBtn">
+            <i class="fas fa-star"></i>
+            <span>Rate & Review</span>
+            <div class="rating-stars hidden" id="ratingStars">
+              <i class="fas fa-star star" data-rating="1"></i>
+              <i class="fas fa-star star" data-rating="2"></i>
+              <i class="fas fa-star star" data-rating="3"></i>
+              <i class="fas fa-star star" data-rating="4"></i>
+              <i class="fas fa-star star" data-rating="5"></i>
+            </div>
+            <textarea class="review-textarea hidden" id="reviewTextarea" placeholder="Write your review here..."></textarea>
+            <button class="hidden bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600 transition duration-200" id="submitReviewBtn">Submit Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Files -->
+  <script src="js/discover.js"></script>
+</body>
+</html>
