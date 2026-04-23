@@ -5,7 +5,7 @@ CineVault is a frontend movie and TV show discovery platform that allows users t
 ---
 ## Live Demo
 
-🔗 [Add your deployed GitHub Pages link here](https://aishwaryavaidya05.github.io/CineVault/)
+🔗 [https://aishwaryavaidya05.github.io/CineVault/]()
 ## 🚀 Features
 
 - 🔍 Search movies and TV shows using the **TMDB API**
